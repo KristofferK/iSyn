@@ -2,6 +2,7 @@ using iSynApp.App.Models;
 using System;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static iSynApp.App.Util.Util;
 
@@ -9,9 +10,35 @@ namespace iSynApp.App.Services
 {
     public class ISynService
     {
-        public Task<ISynReport> GetReportAsync(string code)
+        public Task<ISynReportResult> GetReportAsync(string code)
         {
-            return Task.FromResult(Scrape(code));
+            if (!Regex.IsMatch(code, "^[a-zA-Z0-9]{20}$"))
+            {
+                return Task.FromResult(new ISynReportResult
+                {
+                    Report = null,
+                    Message = "Rapportnummeret skal bestå af bogstaverne a-z, A-Z samt 0-9, og skal være 20 tegn langt",
+                    Success = false,
+                });
+            }
+
+            var report = Scrape(code);
+            if (report == null)
+            {
+                return Task.FromResult(new ISynReportResult
+                {
+                    Report = null,
+                    Message = "Der blev ikke fundet en rapport med det angivne nummer",
+                    Success = false,
+                });
+            }
+
+            return Task.FromResult(new ISynReportResult
+            {
+                Report = report,
+                Message = null,
+                Success = true,
+            });
         }
 
         private ISynReport Scrape(string code)

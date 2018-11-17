@@ -3,42 +3,50 @@
 @page "/isyn-report"
 @inject ISynService ISynService
 
-@if (report == null)
+@if (isLoading)
+{
+    <h1>Henter data &hellip;</h1>
+}
+else if (reportResult == null || reportResult.Success == false)
 {
     <h1>Rapport</h1>
     <div class="form-group">
         <label>Indtast venligst dit rapportnummer</label>
         <input class="form-control" bind="@reportCode" />
     </div>
+    @if (reportResult != null && !reportResult.Success)
+    {
+        <p class="text-danger">@reportResult.Message</p>
+    }
     <button class="btn btn-info" onclick="@loadReport">Hent rapport</button>
 }
 else
 {
-    <h1>@report.Tenancy (@report.Code)</h1>
+    <h1>@reportResult.Report.Tenancy (@reportResult.Report.Code)</h1>
 
     <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    @report.Tenant.Name
+                    @reportResult.Report.Tenant.Name
                 </div>
                 <div class="card-body">
                     <table class="table">
                         <tr>
                             <th>Navn</th>
-                            <td>@report.Tenant.Name</td>
+                            <td>@reportResult.Report.Tenant.Name</td>
                         </tr>
                         <tr>
                             <th>E-mail</th>
-                            <td>@report.Tenant.Email</td>
+                            <td>@reportResult.Report.Tenant.Email</td>
                         </tr>
                         <tr>
                             <th>Telefonnummer</th>
-                            <td>@report.Tenant.PhoneNo</td>
+                            <td>@reportResult.Report.Tenant.PhoneNo</td>
                         </tr>
                         <tr>
                             <th>Overtagelsesdato</th>
-                            <td>@report.Tenant.OccupancyDate</td>
+                            <td>@reportResult.Report.Tenant.OccupancyDate</td>
                         </tr>
                     </table>
                 </div>
@@ -47,29 +55,29 @@ else
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    @report.Landlord.Name
+                    @reportResult.Report.Landlord.Name
                 </div>
                 <div class="card-body">
                     <table class="table">
                         <tr>
                             <th>Navn</th>
-                            <td>@report.Landlord.Name</td>
+                            <td>@reportResult.Report.Landlord.Name</td>
                         </tr>
                         <tr>
                             <th>Afdeling</th>
-                            <td>@report.Landlord.Department</td>
+                            <td>@reportResult.Report.Landlord.Department</td>
                         </tr>
                         <tr>
                             <th>Lejlighednummer</th>
-                            <td>@report.Landlord.ApartmentId</td>
+                            <td>@reportResult.Report.Landlord.ApartmentId</td>
                         </tr>
                         <tr>
                             <th>Adresse</th>
-                            <td>@report.Landlord.Address</td>
+                            <td>@reportResult.Report.Landlord.Address</td>
                         </tr>
                         <tr>
                             <th>By</th>
-                            <td>@report.Landlord.ZipCity</td>
+                            <td>@reportResult.Report.Landlord.ZipCity</td>
                         </tr>
                     </table>
                 </div>
@@ -78,18 +86,21 @@ else
     </div>
 
 
-    @if (report.BlueprintUrl != null)
+    @if (reportResult.Report.BlueprintUrl != null)
     {
-        <img src="@report.BlueprintUrl" />
+        <img src="@reportResult.Report.BlueprintUrl" />
     }
 }
 
 @functions {
-string reportCode;
-ISynReport report;
+    string reportCode;
+    bool isLoading;
+    ISynReportResult reportResult;
 
-async void loadReport()
-{
-    report = await ISynService.GetReportAsync(reportCode);
-}
+    async void loadReport()
+    {
+        isLoading = true;
+        reportResult = await ISynService.GetReportAsync(reportCode);
+        isLoading = false;
+    }
 }
