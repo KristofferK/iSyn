@@ -7,13 +7,74 @@
 {
     <h1>Report</h1>
     <p>Please enter your report code</p>
-    <input bind="@reportCode"/>
+    <input bind="@reportCode" />
     <button onclick="@loadReport">Load report</button>
 }
 else
 {
     <h1>@report.Tenancy (@report.Code)</h1>
-    
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    @report.Tenant.Name
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Navn</th>
+                            <td>@report.Tenant.Name</td>
+                        </tr>
+                        <tr>
+                            <th>E-mail</th>
+                            <td>@report.Tenant.Email</td>
+                        </tr>
+                        <tr>
+                            <th>Telefonnummer</th>
+                            <td>@report.Tenant.PhoneNo</td>
+                        </tr>
+                        <tr>
+                            <th>Overtagelsesdato</th>
+                            <td>@report.Tenant.OccupancyDate</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    @report.Landlord.Name
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Navn</th>
+                            <td>@report.Landlord.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Afdeling</th>
+                            <td>@report.Landlord.Department</td>
+                        </tr>
+                        <tr>
+                            <th>Lejlighednummer</th>
+                            <td>@report.Landlord.ApartmentId</td>
+                        </tr>
+                        <tr>
+                            <th>Adresse</th>
+                            <td>@report.Landlord.Address</td>
+                        </tr>
+                        <tr>
+                            <th>By</th>
+                            <td>@report.Landlord.ZipCity</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     @if (report.BlueprintUrl != null)
     {
@@ -22,11 +83,11 @@ else
 }
 
 @functions {
-    string reportCode;
-    ISynReport report;
+string reportCode;
+ISynReport report;
 
-    async void loadReport()
-    {
-        report = await ISynService.GetReportAsync(reportCode);
-    }
+async void loadReport()
+{
+    report = await ISynService.GetReportAsync(reportCode);
+}
 }
