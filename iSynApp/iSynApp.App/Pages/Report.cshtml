@@ -5,10 +5,12 @@
 
 @if (report == null)
 {
-    <h1>Report</h1>
-    <p>Please enter your report code</p>
-    <input bind="@reportCode" />
-    <button onclick="@loadReport">Load report</button>
+    <h1>Rapport</h1>
+    <div class="form-group">
+        <label>Indtast venligst dit rapportnummer</label>
+        <input class="form-control" bind="@reportCode" />
+    </div>
+    <button class="btn btn-info" onclick="@loadReport">Hent rapport</button>
 }
 else
 {
