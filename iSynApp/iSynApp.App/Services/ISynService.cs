@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using static iSynApp.App.Util.Util;
 
 namespace iSynApp.App.Services
 {
@@ -27,51 +28,48 @@ namespace iSynApp.App.Services
                 return new ISynReport()
                 {
                     Code = code,
-                    IsClosed = source.Contains("list-is-closed-date"),
                     Tenancy = InBetween(source, "<div id=\"mainHeader\">Lejemål: ", "</div>"),
+                    IsClosed = source.Contains("list-is-closed-date"),
+                    BlueprintUrl = GetBlueprintUrl(source),
+                    Landlord = GetLandlord(source),
+                    Tenant = GetTenant(source)
                 };
             }
         }
 
-        public static string InBetween(string haystack, string afterThis, string beforeThis)
+        private string GetBlueprintUrl(string source)
         {
-            return InBetween(haystack, afterThis, beforeThis, 1, 0);
-        }
-
-        public static string InBetween(string haystack, string afterThis, string beforeThis,
-            int afterIndex, int beforeIndex, bool includeAfterAndBefore = false)
-        {
-            if (haystack == null) return null;
-
-            if (haystack.Contains(afterThis))
+            var url = InBetween(source, "\"filePath\": \"/files", "\"");
+            if (url == null)
             {
-                var split = Split(haystack, afterThis);
-                if (split.Length > afterIndex)
-                {
-                    string rv = split[afterIndex];
-                    if (rv.Contains(beforeThis))
-                    {
-                        split = Split(rv, beforeThis);
-                        if (split.Length > beforeIndex)
-                        {
-                            rv = split[beforeIndex];
-
-                            if (includeAfterAndBefore)
-                            {
-                                rv = $"{afterThis}{rv}{beforeThis}";
-                            }
-
-                            return rv;
-                        }
-                    }
-                }
+                return null;
             }
-            return null;
+            return "http://isynv1.dk/" + url;
         }
 
-        public static string[] Split(string s, string separator)
+        private Landlord GetLandlord(string source)
         {
-            return s.Split(new string[] { separator }, StringSplitOptions.None);
+            source = InBetween(source, "<div class=\"text\">", "</div>", 1, 0);
+            return new Landlord
+            {
+                Name = InBetween(source, "<span>", "</span>"),
+                Department = InBetween(source, "<span>Afdeling&nbsp;", "</span>"),
+                ApartmentId = InBetween(source, "<span>Lejemålsnr.: ", "</span>"),
+                Address = InBetween(source, "<span>", "</span>", 4, 0),
+                ZipCity = InBetween(source, "<span>", "</span>", 5, 0),
+            };
+        }
+
+        private Tenant GetTenant(string source)
+        {
+            source = InBetween(source, "<div class=\"text\">", "</div>", 2, 0);
+            return new Tenant
+            {
+                Name = InBetween(source, "<span>", "</span>"),
+                Email = InBetween(source, "<span>E-mail: ", "</span>"),
+                PhoneNo = InBetween(source, "<span>Telefon: ", "</span>"),
+                OccupancyDate = InBetween(source, "<span>Indflytningsdato: ", "</span>")
+            };
         }
     }
 }
