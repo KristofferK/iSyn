@@ -71,7 +71,7 @@ namespace iSynApp.App.Services
             {
                 return null;
             }
-            return "http://isynv1.dk/" + url;
+            return "http://isynv1.dk/files" + url;
         }
 
         private Landlord GetLandlord(string source)

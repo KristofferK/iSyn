@@ -88,7 +88,11 @@ else
 
     @if (reportResult.Report.BlueprintUrl != null)
     {
-        <img src="@reportResult.Report.BlueprintUrl" />
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <img class="img-fluid" src="@reportResult.Report.BlueprintUrl" />
+            </div>
+        </div>
     }
 }
 
