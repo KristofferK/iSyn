@@ -1,0 +1,32 @@
+﻿@using iSynApp.App.Services
+@using iSynApp.App.Models
+@page "/isyn-report"
+@inject ISynService ISynService
+
+@if (report == null)
+{
+    <h1>Report</h1>
+    <p>Please enter your report code</p>
+    <input bind="@reportCode"/>
+    <button onclick="@loadReport">Load report</button>
+}
+else
+{
+    <h1>@report.Tenancy (@report.Code)</h1>
+    
+
+    @if (report.BlueprintUrl != null)
+    {
+        <img src="@report.BlueprintUrl" />
+    }
+}
+
+@functions {
+    string reportCode;
+    ISynReport report;
+
+    async void loadReport()
+    {
+        report = await ISynService.GetReportAsync(reportCode);
+    }
+}
