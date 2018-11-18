@@ -20,12 +20,12 @@ else if (ReportResult == null || ReportResult.Success == false)
     }
 
     <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="showPassword" bind="@ShowPassword"/>
+        <input class="form-check-input" type="checkbox" value="" id="showPassword" bind="@ShowPassword" />
         <label class="form-check-label" for="showPassword">
             Vis rapportnummer
         </label>
     </div>
-    <br/>   
+    <br />
 
     <button class="btn btn-info" onclick="@loadReport">Hent rapport</button>
 }
@@ -94,6 +94,27 @@ else
         </div>
     </div>
 
+    <div class="row mt-2">
+        @foreach (var room in ReportResult.Report.Rooms)
+        {
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        @room.Title
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            @foreach  (var deficiency in room.Deficiencies)
+                            {
+                                <li>@deficiency.Description</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
 
     @if (ReportResult.Report.BlueprintUrl != null)
     {
@@ -106,15 +127,15 @@ else
 }
 
 @functions {
-    public string ReportCode { get; set; }
-    public bool IsLoading { get; set; }
-    public bool ShowPassword { get; set; }
-    public ISynReportResult ReportResult { get; set; }
+public string ReportCode { get; set; }
+public bool IsLoading { get; set; }
+public bool ShowPassword { get; set; }
+public ISynReportResult ReportResult { get; set; }
 
-    async void loadReport()
-    {
-        IsLoading = true;
-        ReportResult = await ISynService.GetReportAsync(ReportCode);
-        IsLoading = false;
-    }
+async void loadReport()
+{
+    IsLoading = true;
+    ReportResult = await ISynService.GetReportAsync(ReportCode);
+    IsLoading = false;
+}
 }

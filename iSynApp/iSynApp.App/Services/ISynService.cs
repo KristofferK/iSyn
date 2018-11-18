@@ -1,5 +1,6 @@
 using iSynApp.App.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -59,7 +60,8 @@ namespace iSynApp.App.Services
                     IsClosed = source.Contains("list-is-closed-date"),
                     BlueprintUrl = GetBlueprintUrl(source),
                     Landlord = GetLandlord(source),
-                    Tenant = GetTenant(source)
+                    Tenant = GetTenant(source),
+                    Rooms = GetRoomsWithDeficiencies(source)
                 };
             }
         }
@@ -97,6 +99,35 @@ namespace iSynApp.App.Services
                 PhoneNo = InBetween(source, "<span>Telefon: ", "</span>"),
                 OccupancyDate = InBetween(source, "<span>Indflytningsdato: ", "</span>")
             };
+        }
+
+        private IEnumerable<Room> GetRoomsWithDeficiencies(string source)
+        {
+            var rooms = new Dictionary<string, IList<Deficiency>>();
+            Split(source, "<div class=\"info\">")
+                .Skip(1)
+                .Select(e => Split(e, "</div>")[0])
+                .ToList()
+                .ForEach(e =>
+                {
+                    var location = InBetween(e, "<h5>", "</h5>");
+                    var description = WebUtility.HtmlDecode(InBetween(e, "<p>", "</p>")).Replace("<br>", " ");
+                    description = Regex.Replace(description, "<[^>]+>", "");
+                    description = description.Trim();
+                    description = description[0].ToString().ToUpper() + description.Substring(1);
+
+                    if (!rooms.ContainsKey(location))
+                    {
+                        rooms[location] = new List<Deficiency>();
+                    }
+                    rooms[location].Add(new Deficiency(description));
+                });
+            return rooms.Select(e => new Room
+            {
+                Title = e.Key,
+                Deficiencies = e.Value.OrderBy(deficiency => deficiency.Description)
+            })
+            .OrderBy(e => e.Title);
         }
     }
 }

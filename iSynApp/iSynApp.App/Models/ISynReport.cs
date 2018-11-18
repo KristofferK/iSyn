@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace iSynApp.App.Models
 {
@@ -11,5 +12,6 @@ namespace iSynApp.App.Models
         public string BlueprintUrl { get; set; }
         public Tenant Tenant { get; set; }
         public Landlord Landlord { get; set; }
+        public IEnumerable<Room> Rooms { get; set; }
     }
 }

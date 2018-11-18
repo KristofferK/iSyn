@@ -8,5 +8,10 @@ namespace iSynApp.App.Models
     public class Deficiency
     {
         public string Description { get; set; }
+
+        public Deficiency(string description)
+        {
+            Description = description;
+        }
     }
 }
