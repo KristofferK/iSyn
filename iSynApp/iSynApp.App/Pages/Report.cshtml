@@ -3,50 +3,59 @@
 @page "/isyn-report"
 @inject ISynService ISynService
 
-@if (isLoading)
+@if (IsLoading)
 {
     <h1>Henter data &hellip;</h1>
 }
-else if (reportResult == null || reportResult.Success == false)
+else if (ReportResult == null || ReportResult.Success == false)
 {
     <h1>Rapport</h1>
     <div class="form-group">
         <label>Indtast venligst dit rapportnummer</label>
-        <input class="form-control" bind="@reportCode" />
+        <input type="@((ShowPassword ? "text" : "password"))" class="form-control" bind="@ReportCode" />
     </div>
-    @if (reportResult != null && !reportResult.Success)
+    @if (ReportResult != null && !ReportResult.Success)
     {
-        <p class="text-danger">@reportResult.Message</p>
+        <p class="text-danger">@ReportResult.Message</p>
     }
+
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="showPassword" bind="@ShowPassword"/>
+        <label class="form-check-label" for="showPassword">
+            Vis rapportnummer
+        </label>
+    </div>
+    <br/>   
+
     <button class="btn btn-info" onclick="@loadReport">Hent rapport</button>
 }
 else
 {
-    <h1>@reportResult.Report.Tenancy (@reportResult.Report.CodeMasked)</h1>
+    <h1>@ReportResult.Report.Tenancy (@ReportResult.Report.CodeMasked)</h1>
 
     <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    @reportResult.Report.Tenant.Name
+                    @ReportResult.Report.Tenant.Name
                 </div>
                 <div class="card-body">
                     <table class="table">
                         <tr>
                             <th>Navn</th>
-                            <td>@reportResult.Report.Tenant.Name</td>
+                            <td>@ReportResult.Report.Tenant.Name</td>
                         </tr>
                         <tr>
                             <th>E-mail</th>
-                            <td>@reportResult.Report.Tenant.Email</td>
+                            <td>@ReportResult.Report.Tenant.Email</td>
                         </tr>
                         <tr>
                             <th>Telefonnummer</th>
-                            <td>@reportResult.Report.Tenant.PhoneNo</td>
+                            <td>@ReportResult.Report.Tenant.PhoneNo</td>
                         </tr>
                         <tr>
                             <th>Overtagelsesdato</th>
-                            <td>@reportResult.Report.Tenant.OccupancyDate</td>
+                            <td>@ReportResult.Report.Tenant.OccupancyDate</td>
                         </tr>
                     </table>
                 </div>
@@ -55,29 +64,29 @@ else
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    @reportResult.Report.Landlord.Name
+                    @ReportResult.Report.Landlord.Name
                 </div>
                 <div class="card-body">
                     <table class="table">
                         <tr>
                             <th>Navn</th>
-                            <td>@reportResult.Report.Landlord.Name</td>
+                            <td>@ReportResult.Report.Landlord.Name</td>
                         </tr>
                         <tr>
                             <th>Afdeling</th>
-                            <td>@reportResult.Report.Landlord.Department</td>
+                            <td>@ReportResult.Report.Landlord.Department</td>
                         </tr>
                         <tr>
                             <th>Lejlighednummer</th>
-                            <td>@reportResult.Report.Landlord.ApartmentId</td>
+                            <td>@ReportResult.Report.Landlord.ApartmentId</td>
                         </tr>
                         <tr>
                             <th>Adresse</th>
-                            <td>@reportResult.Report.Landlord.Address</td>
+                            <td>@ReportResult.Report.Landlord.Address</td>
                         </tr>
                         <tr>
                             <th>By</th>
-                            <td>@reportResult.Report.Landlord.ZipCity</td>
+                            <td>@ReportResult.Report.Landlord.ZipCity</td>
                         </tr>
                     </table>
                 </div>
@@ -86,25 +95,26 @@ else
     </div>
 
 
-    @if (reportResult.Report.BlueprintUrl != null)
+    @if (ReportResult.Report.BlueprintUrl != null)
     {
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <img class="img-fluid" src="@reportResult.Report.BlueprintUrl" />
+                <img class="img-fluid" src="@ReportResult.Report.BlueprintUrl" />
             </div>
         </div>
     }
 }
 
 @functions {
-    string reportCode;
-    bool isLoading;
-    ISynReportResult reportResult;
+    public string ReportCode { get; set; }
+    public bool IsLoading { get; set; }
+    public bool ShowPassword { get; set; }
+    public ISynReportResult ReportResult { get; set; }
 
     async void loadReport()
     {
-        isLoading = true;
-        reportResult = await ISynService.GetReportAsync(reportCode);
-        isLoading = false;
+        IsLoading = true;
+        ReportResult = await ISynService.GetReportAsync(ReportCode);
+        IsLoading = false;
     }
 }
