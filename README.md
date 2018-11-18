@@ -8,4 +8,4 @@ For the project we will use Blazor with the server-side hosting model.
 
 ## Example output
 ![Report number](http://github-images.fobr.dk/isyn1.png "Report number")
-![Result](http://github-images.fobr.dk/isyn2.png "Result")
+![Result](http://github-images.fobr.dk/isyn2.png? "Result")
